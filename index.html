@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>🌹</title>
+  <style>
+    :root{
+      --bg1:#070b1a;
+      --bg2:#0b1433;
+      --rose:#e11d48;
+      --rose2:#fb7185;
+      --text:#e8edf7;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      height:100vh;
+      overflow:hidden;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 800px at 50% 35%, rgba(255,255,255,.08), transparent 60%),
+        radial-gradient(900px 600px at 50% 80%, rgba(225,29,72,.08), transparent 60%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+      user-select:none;
+      cursor:pointer;
+    }
+
+    /* soft stars */
+    .stars::before, .stars::after{
+      content:"";
+      position:absolute; inset:-20%;
+      background-image:
+        radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,.6) 50%, transparent 55%),
+        radial-gradient(1px 1px at 30% 70%, rgba(255,255,255,.5) 50%, transparent 55%),
+        radial-gradient(1px 1px at 50% 30%, rgba(255,255,255,.35) 50%, transparent 55%),
+        radial-gradient(1px 1px at 70% 55%, rgba(255,255,255,.55) 50%, transparent 55%),
+        radial-gradient(1px 1px at 85% 25%, rgba(255,255,255,.3) 50%, transparent 55%),
+        radial-gradient(1px 1px at 15% 85%, rgba(255,255,255,.35) 50%, transparent 55%),
+        radial-gradient(1px 1px at 90% 80%, rgba(255,255,255,.4) 50%, transparent 55%);
+      opacity:.6;
+      animation: drift 18s linear infinite;
+    }
+    .stars::after{ opacity:.35; animation-duration: 32s; transform:scale(1.2); }
+    @keyframes drift { from{transform:translateY(0)} to{transform:translateY(40px)} }
+
+    .stage{
+      position:absolute; inset:0;
+      display:grid;
+      place-items:center;
+    }
+
+    /* rose group spins */
+    .rose-wrap{
+      position:relative;
+      width:320px; height:320px;
+      filter: drop-shadow(0 18px 30px rgba(0,0,0,.45));
+      animation: spin 10s linear infinite;
+      transform-origin: 50% 55%;
+    }
+    @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+
+    .rose-center{
+      position:absolute; left:50%; top:46%;
+      width:58px; height:58px;
+      transform:translate(-50%,-50%) rotate(12deg);
+      border-radius: 16px 16px 20px 20px;
+      background: radial-gradient(circle at 30% 30%, var(--rose2), var(--rose));
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.15);
+      z-index: 30;
+    }
+
+    .petal{
+      position:absolute; left:50%; top:46%;
+      width:86px; height:56px;
+      transform-origin: 10% 50%;
+      border-radius: 70% 30% 70% 30% / 55% 45% 55% 45%;
+      background: radial-gradient(circle at 30% 30%, var(--rose2), var(--rose));
+      box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,.14),
+        0 8px 18px rgba(225,29,72,.18);
+      transition: opacity .28s ease, transform .38s ease;
+      will-change: transform, opacity;
+    }
+    .petal.off{
+      opacity:0;
+      transform: translate(-50%,-50%) rotate(var(--r)) translateX(var(--rad)) rotate(26deg) scale(.84);
+    }
+
+    /* stem + leaves */
+    .stem{
+      position:absolute;
+      left:50%; top:54%;
+      width:14px; height:240px;
+      transform:translateX(-50%);
+      background: linear-gradient(180deg, #15803d, #0f5f2d);
+      border-radius: 999px;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.12);
+      filter: drop-shadow(0 12px 18px rgba(0,0,0,.35));
+    }
+    .leaf{
+      position:absolute;
+      left:50%; top:66%;
+      width:90px; height:44px;
+      transform: translateX(-50%) rotate(-22deg);
+      border-radius: 0 90px 90px 90px;
+      background: radial-gradient(circle at 30% 30%, #22c55e, #16a34a);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.12);
+    }
+    .leaf.r{
+      top:77%;
+      transform: translateX(-50%) rotate(20deg) scaleX(-1);
+      opacity:.9;
+    }
+
+    /* falling petals */
+    .fall-layer{
+      position:absolute; inset:0;
+      pointer-events:none;
+    }
+    .fall{
+      position:absolute;
+      width:18px; height:12px;
+      border-radius: 70% 30% 70% 30% / 55% 45% 55% 45%;
+      background: radial-gradient(circle at 30% 30%, var(--rose2), var(--rose));
+      opacity:.9;
+      filter: drop-shadow(0 10px 10px rgba(0,0,0,.25));
+      animation: fall linear forwards;
+    }
+    @keyframes fall{
+      0%   { transform: translate3d(0,0,0) rotate(0deg); opacity:.95; }
+      70%  { opacity:.9; }
+      100% { transform: translate3d(var(--dx), 110vh, 0) rotate(var(--rot)); opacity:0; }
+    }
+
+    /* flash on reveal */
+    .flash{
+      position:absolute; inset:0;
+      background: radial-gradient(520px 520px at 50% 45%, rgba(255,255,255,.22), transparent 60%),
+                  radial-gradient(980px 740px at 50% 55%, rgba(225,29,72,.20), transparent 72%);
+      opacity:0;
+      pointer-events:none;
+      transition: opacity .35s ease;
+    }
+    .flash.on{ opacity:1; }
+
+    /* modal */
+    .modal{
+      position:absolute; inset:0;
+      display:grid;
+      place-items:center;
+      background: rgba(0,0,0,.45);
+      opacity:0;
+      pointer-events:none;
+      transition: opacity .25s ease;
+      cursor:default;
+    }
+    .modal.on{
+      opacity:1;
+      pointer-events:auto;
+    }
+    .card{
+      width:min(520px, calc(100vw - 28px));
+      border-radius:20px;
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.14);
+      box-shadow: 0 30px 80px rgba(0,0,0,.45);
+      padding:18px 16px 14px;
+      backdrop-filter: blur(10px);
+      text-align:center;
+    }
+    .card h1{
+      margin:4px 0 6px;
+      font-size:28px;
+      letter-spacing:.2px;
+    }
+    .card p{
+      margin:0 0 14px;
+      color:rgba(232,237,247,.75);
+      font-size:14px;
+    }
+    .btns{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+    button{
+      appearance:none;
+      border:none;
+      border-radius:14px;
+      padding:10px 14px;
+      font-weight:800;
+      cursor:pointer;
+      color:var(--text);
+      background: rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.14);
+      box-shadow: 0 10px 24px rgba(0,0,0,.25);
+      transition: transform .12s ease, background .12s ease;
+    }
+    button:hover{ transform: translateY(-1px); background: rgba(255,255,255,.14); }
+    .yes{ background: rgba(225,29,72,.22); border-color: rgba(225,29,72,.35); }
+    .yes:hover{ background: rgba(225,29,72,.28); }
+    .no{ background: rgba(255,255,255,.08); }
+
+    .tiny{
+      margin-top:10px;
+      font-size:12px;
+      color:rgba(232,237,247,.6);
+    }
+  </style>
+</head>
+<body>
+  <div class="stars"></div>
+
+  <div class="stage">
+    <div class="flash" id="flash"></div>
+
+    <!-- stem / leaves (not spinning) -->
+    <div class="stem"></div>
+    <div class="leaf"></div>
+    <div class="leaf r"></div>
+
+    <!-- spinning rose -->
+    <div class="rose-wrap" id="roseWrap" aria-label="Spinning rose">
+      <div class="rose-center"></div>
+      <!-- petals injected by JS -->
+    </div>
+
+    <!-- falling petals -->
+    <div class="fall-layer" id="fallLayer"></div>
+
+    <!-- modal -->
+    <div class="modal" id="modal">
+      <div class="card">
+        <h1>Can you be my valentine? 💘</h1>
+        <p>Okay… last petal is gone 😄</p>
+        <div class="btns">
+          <button class="yes" id="yesBtn">Yes</button>
+          <button class="no" id="noBtn">No</button>
+        </div>
+        <div class="tiny" id="result"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const roseWrap = document.getElementById('roseWrap');
+    const fallLayer = document.getElementById('fallLayer');
+    const flash = document.getElementById('flash');
+    const modal = document.getElementById('modal');
+    const yesBtn = document.getElementById('yesBtn');
+    const noBtn = document.getElementById('noBtn');
+    const result = document.getElementById('result');
+
+    let exploded = false;
+
+    // Build layered petals (3 rows)
+    const petals = [];
+    const rows = [
+      { count: 8,  radius: 52,  size: 54, tilt: 12 }, // inner
+      { count: 12, radius: 78,  size: 66, tilt: 16 }, // middle
+      { count: 16, radius: 104, size: 80, tilt: 20 }  // outer
+    ];
+
+    rows.forEach((row, rIndex) => {
+      for (let i = 0; i < row.count; i++) {
+        const p = document.createElement('div');
+        p.className = 'petal';
+
+        const angle = (360 / row.count) * i;
+
+        p.style.setProperty('--r', angle + 'deg');
+        p.style.setProperty('--rad', row.radius + 'px');
+
+        p.style.transform =
+          `translate(-50%,-50%) rotate(${angle}deg)
+           translateX(${row.radius}px)
+           rotate(${row.tilt}deg)`;
+
+        const sizeVar = (Math.random() * 6);
+        p.style.width  = (row.size + sizeVar) + 'px';
+        p.style.height = ((row.size + sizeVar) * 0.65) + 'px';
+
+        // depth: outer petals behind slightly
+        p.style.zIndex = (12 - rIndex).toString();
+
+        roseWrap.appendChild(p);
+        petals.push(p);
+      }
+    });
+
+    let petalsLeft = petals.length;
+
+    // Falling petal generator
+    function spawnFallingPetal(x, y, big=false){
+      const el = document.createElement('div');
+      el.className = 'fall';
+      const size = big ? (16 + Math.random()*14) : (10 + Math.random()*12);
+      el.style.width = size + 'px';
+      el.style.height = (size * 0.65) + 'px';
+
+      el.style.left = (x - size/2) + 'px';
+      el.style.top = (y - size/2) + 'px';
+
+      const dx = (Math.random()*240 - 120) + 'px';
+      const rot = (Math.random()*720 - 360) + 'deg';
+      el.style.setProperty('--dx', dx);
+      el.style.setProperty('--rot', rot);
+
+      const dur = big ? (2.4 + Math.random()*2.2) : (3.4 + Math.random()*4.2);
+      el.style.animationDuration = dur + 's';
+
+      fallLayer.appendChild(el);
+      setTimeout(() => el.remove(), (dur * 1000) + 200);
+    }
+
+    // Ambient falling petals forever (until question shows)
+    const ambient = setInterval(() => {
+      if (exploded) return;
+      spawnFallingPetal(Math.random() * window.innerWidth, -20, false);
+    }, 220);
+
+    function showQuestion(){
+      if (exploded) return;
+      exploded = true;
+
+      // flash + mini burst
+      flash.classList.add('on');
+      setTimeout(() => flash.classList.remove('on'), 420);
+
+      const cx = window.innerWidth * 0.5;
+      const cy = window.innerHeight * 0.46;
+      for (let i=0;i<110;i++){
+        setTimeout(() => spawnFallingPetal(cx, cy, true), i*7);
+      }
+
+      // stop spinning and show modal
+      roseWrap.style.animationPlayState = 'paused';
+      clearInterval(ambient);
+
+      setTimeout(() => modal.classList.add('on'), 600);
+    }
+
+    function pluckOnePetal(clickX, clickY){
+      if (exploded) return;
+
+      if (petalsLeft <= 0){
+        showQuestion();
+        return;
+      }
+
+      const idx = petalsLeft - 1;
+      const petal = petals[idx];
+      petal.classList.add('off');
+      petalsLeft--;
+
+      // falling burst
+      const burst = 9 + Math.floor(Math.random()*7);
+      for (let i=0;i<burst;i++){
+        setTimeout(() => spawnFallingPetal(clickX, clickY, false), i*22);
+      }
+
+      // if that was the last petal -> show question
+      if (petalsLeft === 0) {
+        setTimeout(showQuestion, 450);
+      }
+    }
+
+    // Click anywhere to pluck petals (except when modal is open)
+    document.addEventListener('click', (e) => {
+      if (modal.classList.contains('on')) return;
+      pluckOnePetal(e.clientX, e.clientY);
+    });
+
+    // Buttons
+    yesBtn.addEventListener('click', () => {
+      result.textContent = "Yessss 💖🌹";
+      const cx = window.innerWidth * 0.5;
+      const cy = window.innerHeight * 0.35;
+      for (let i=0;i<160;i++) setTimeout(()=>spawnFallingPetal(cx, cy, true), i*6);
+    });
+
+    // fun "No" button that dodges slightly
+    function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
+    let noOffsetX = 0, noOffsetY = 0;
+    noBtn.addEventListener('mouseenter', () => {
+      if (!modal.classList.contains('on')) return;
+      noOffsetX += (Math.random()*160 - 80);
+      noOffsetY += (Math.random()*80 - 40);
+      noOffsetX = clamp(noOffsetX, -180, 180);
+      noOffsetY = clamp(noOffsetY, -80, 80);
+      noBtn.style.transform = `translate(${noOffsetX}px, ${noOffsetY}px)`;
+    });
+    noBtn.addEventListener('click', () => {
+      result.textContent = "Nice try 😌";
+    });
+  </script>
+</body>
+</html>
